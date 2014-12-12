@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- WARNING: Eclipse auto-generated file.
+              Any modifications will be overwritten.
+              To include a user specific buildfile here, simply create one in the same
+              directory with the processing instruction <?eclipse.ant.import?>
+              as the first entry and export the buildfile again. -->
+<project basedir="." default="build" name="Subsystem">
+    <property environment="env"/>
+    <property name="LibraryManager.location" value="../LibraryManager"/>
+    <property name="CampaignEligibility.location" value="../CampaignEligibility"/>
+    <property name="ECLIPSE_HOME" value="../../../../../eclipse"/>
+    <property name="JsonHandler.location" value="../JsonHandler"/>
+    <property name="DataObject.location" value="../DataObject"/>
+    <property name="RingBuffer.location" value="../RingBuffer"/>
+    <property name="Messaging.location" value="../messaging"/>
+    <property name="debuglevel" value="source,lines,vars"/>
+    <property name="target" value="1.6"/>
+    <property name="source" value="1.6"/>
+    <path id="JsonHandler.classpath">
+        <pathelement location="${JsonHandler.location}/bin"/>
+    </path>
+    <path id="LibraryManager.classpath">
+        <pathelement location="${LibraryManager.location}/bin"/>
+    </path>
+    <path id="DataObject.classpath">
+        <pathelement location="${DataObject.location}/bin"/>
+        <path refid="JsonHandler.classpath"/>
+        <path refid="LibraryManager.classpath"/>
+        <pathelement location="${LibraryManager.location}/jdom/jdom.jar"/>
+        <pathelement location="${LibraryManager.location}/logging/commons-logging.jar"/>
+        <pathelement location="${LibraryManager.location}/logging/log4j-1.2.14.jar"/>
+        <pathelement location="${LibraryManager.location}/common/commons-codec-1.6.jar"/>
+    </path>
+    <path id="RingBuffer.classpath">
+        <pathelement location="${RingBuffer.location}/bin"/>
+    </path>
+    <path id="Messaging.classpath">
+        <pathelement location="${Messaging.location}/bin"/>
+        <path refid="DataObject.classpath"/>
+        <path refid="RingBuffer.classpath"/>
+        <pathelement location="${LibraryManager.location}/rabbitMQ/rabbitmq-client.jar"/>
+        <pathelement location="${LibraryManager.location}/common/commons-io.jar"/>
+        <pathelement location="${LibraryManager.location}/common/commons-lang-2.6.jar"/>
+        <pathelement location="${LibraryManager.location}/logging/commons-logging.jar"/>
+        <pathelement location="${LibraryManager.location}/logging/log4j-1.2.14.jar"/>
+    </path>
+    <path id="Subsystem.classpath">
+        <pathelement location="bin"/>
+        <path refid="DataObject.classpath"/>
+        <path refid="Messaging.classpath"/>
+        <path refid="RingBuffer.classpath"/>
+    </path>
+    <target name="init">
+        <mkdir dir="bin"/>
+        <copy includeemptydirs="false" todir="bin">
+            <fileset dir="src">
+                <exclude name="**/*.launch"/>
+                <exclude name="**/*.java"/>
+            </fileset>
+        </copy>
+    </target>
+    <target name="clean">
+        <delete dir="bin"/>
+    </target>
+    <target depends="clean" name="cleanall">
+        <ant antfile="build.xml" dir="${JsonHandler.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${LibraryManager.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${DataObject.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${RingBuffer.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${Messaging.location}" inheritAll="false" target="clean"/>
+    </target>
+    <target depends="build-subprojects,build-project" name="build"/>
+    <target name="build-subprojects">
+        <ant antfile="build.xml" dir="${JsonHandler.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${LibraryManager.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${DataObject.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${RingBuffer.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+        <ant antfile="build.xml" dir="${Messaging.location}" inheritAll="false" target="build-project">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target depends="init" name="build-project">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" source="${source}" target="${target}">
+            <src path="src"/>
+            <classpath refid="Subsystem.classpath"/>
+        </javac>
+    </target>
+    <target description="Build all projects which reference this project. Useful to propagate changes." name="build-refprojects">
+        <ant antfile="build.xml" dir="${CampaignEligibility.location}" inheritAll="false" target="clean"/>
+        <ant antfile="build.xml" dir="${CampaignEligibility.location}" inheritAll="false" target="build">
+            <propertyset>
+                <propertyref name="build.compiler"/>
+            </propertyset>
+        </ant>
+    </target>
+    <target description="copy Eclipse compiler jars to ant lib directory" name="init-eclipse-compiler">
+        <copy todir="${ant.library.dir}">
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </copy>
+        <unzip dest="${ant.library.dir}">
+            <patternset includes="jdtCompilerAdapter.jar"/>
+            <fileset dir="${ECLIPSE_HOME}/plugins" includes="org.eclipse.jdt.core_*.jar"/>
+        </unzip>
+    </target>
+    <target description="compile project with Eclipse compiler" name="build-eclipse-compiler">
+        <property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+        <antcall target="build"/>
+    </target>
+    <target name="SimpleInProcTest">
+        <java classname="com.textserv.framework.subsystem.test.SimpleInProcTest" failonerror="true" fork="yes">
+            <classpath refid="Subsystem.classpath"/>
+        </java>
+    </target>
+    <target name="SubsystemHostingTest">
+        <java classname="com.textserv.framework.subsystem.test.SubsystemHostingTest" failonerror="true" fork="yes">
+            <classpath refid="Subsystem.classpath"/>
+        </java>
+    </target>
+    <target name="SubsystemRemoteTest">
+        <java classname="com.textserv.framework.subsystem.test.SubsystemRemoteTest" failonerror="true" fork="yes">
+            <classpath refid="Subsystem.classpath"/>
+        </java>
+    </target>
+</project>
